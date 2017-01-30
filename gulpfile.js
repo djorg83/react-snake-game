@@ -15,5 +15,5 @@ gulp.task('default', () => {
     })
     	.pipe(inject({ pattern: '<Inject><filename></Inject>' }))
         .pipe(babel(babelOptions))
-        .pipe(gulp.dest('lib/dist'));
+        .pipe(gulp.dest('dist'));
 });

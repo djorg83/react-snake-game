@@ -30,5 +30,21 @@ npm install react-snake-game
 ```
 
 ```javascript
-const Snake = require('react-snake-game');
+import React    from 'react';
+import ReactDOM from 'react-dom';
+import Snake    from 'react-snake-game';
+
+const WRAPPER_STYLE = {
+    margin : '30px auto',
+    height : 700,
+    width  : 700
+};
+
+const App = () => (
+	<div style={WRAPPER_STYLE}>
+        <Snake />
+	</div>
+);
+
+ReactDOM.render(<App />, document.getElementById('root'));
 ```
