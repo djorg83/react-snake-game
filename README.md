@@ -1,4 +1,4 @@
-# react-bootstrap-sweetalert
+# react-snake-game
 
 [![NPM version](http://img.shields.io/npm/v/react-snake-game.svg)](https://www.npmjs.com/package/react-snake-game)
 [![Downloads](https://img.shields.io/npm/dm/react-snake-game.svg)](https://www.npmjs.com/package/react-snake-game)
