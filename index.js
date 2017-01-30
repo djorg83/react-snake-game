@@ -1,1 +1,1 @@
-module.exports = require('./lib/dist/Board.js');
+module.exports = require('./lib/dist/components/Board.js');

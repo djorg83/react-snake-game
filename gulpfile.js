@@ -7,7 +7,12 @@ const babelOptions = {
 };
 
 gulp.task('default', () => {
-    return gulp.src('lib/components/*.js')
+    return gulp.src([
+    	'lib/components/*.js',
+    	'lib/*.js'
+    ], {
+    	base: './lib/'
+    })
     	.pipe(inject({ pattern: '<Inject><filename></Inject>' }))
         .pipe(babel(babelOptions))
         .pipe(gulp.dest('lib/dist'));

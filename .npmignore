@@ -1,5 +1,7 @@
 node_modules/
 lib/components/
+lib/css/
+lib/*.js
 server.js
 gulpfile.js
 .babelrc
