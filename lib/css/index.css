@@ -1,0 +1,136 @@
+.segment-appear {
+	opacity: 0.01;
+}
+
+.segment-appear.segment-appear-active {
+	opacity: 1;
+	transition: opacity .5s ease-in;
+}
+
+.food {
+	animation: food-appear .3s;
+}
+
+@-webkit-keyframes food-appear {
+	0% {
+		top: 0;
+		left: 0;
+		width: 300px;
+		height: 300px;
+		border-radius: 300px;
+	}
+}
+@-moz-keyframes food-appear {
+	0% {
+		top: 0;
+		left: 0;
+		width: 300px;
+		height: 300px;
+		border-radius: 300px;
+	}
+}
+keyframes food-appear {
+	0% {
+		top: 0;
+		left: 0;
+		width: 300px;
+		height: 300px;
+		border-radius: 300px;
+	}
+}
+
+.blink {
+	animation: blink 2s infinite;
+	-webkit-animation: blink 2s infinite;
+}
+
+@-webkit-keyframes blink {
+	0% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+@-moz-keyframes blink {
+	0% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+keyframes blink {
+	0% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.score {
+	animation-name: score;
+	animation-duration: .7s;
+	animation-timing-function: ease-out; 
+}
+
+@-webkit-keyframes score {
+	0% {
+		font-size: 15px;
+		height: 15px;
+		opacity: 1;
+	}
+	75% {
+		font-size: 75px;
+		height: 75px;
+		opacity: 1;
+	}
+	100% {
+		font-size: 100px;
+		height: 100px;
+		opacity: 0;
+	}
+}
+@-moz-keyframes score {
+	0% {
+		font-size: 15px;
+		height: 15px;
+		opacity: 1;
+	}
+	75% {
+		font-size: 75px;
+		height: 75px;
+		opacity: 1;
+	}
+	100% {
+		font-size: 100px;
+		height: 100px;
+		opacity: 0;
+	}}
+keyframes score {
+	0% {
+		font-size: 15px;
+		height: 15px;
+		opacity: 1;
+	}
+	75% {
+		font-size: 75px;
+		height: 75px;
+		opacity: 1;
+	}
+	100% {
+		font-size: 100px;
+		height: 100px;
+		opacity: 0;
+	}
+}

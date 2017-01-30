@@ -1,0 +1,1 @@
+module.exports = require('./lib/dist/Board.js');
