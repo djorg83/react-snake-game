@@ -9,10 +9,11 @@
 
 [![NPM](https://nodei.co/npm/react-snake-game.png?downloads=true&stars=true)](https://nodei.co/npm/react-snake-game/)
 
-SweetAlert for React/Bootstrap
+React Snake Game
 ==========
 
-An awesome replacement for JavaScript's alert.
+A React component for embedding a game of snake into your app.  The game board auto-scales to the size of it's parent element.
+
 
 Demo
 ----

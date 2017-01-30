@@ -1,6 +1,6 @@
 {
   "name": "react-snake-game",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Snake game that can be embedded in any React app",
   "main": "index.js",
   "scripts": {
