@@ -17,7 +17,7 @@ An awesome replacement for JavaScript's alert.
 Demo
 ----
 
-[See the demo here!](http://djorg83.github.io/react-snake/)
+[See the demo here!](http://djorg83.github.io/react-snake-app/)
 
 Usage
 -----
