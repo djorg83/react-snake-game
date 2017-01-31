@@ -26,7 +26,7 @@ Usage
 You can install through npm:
 
 ```bash
-npm install react-snake-game
+npm install --save react-snake-game
 ```
 
 ```javascript
