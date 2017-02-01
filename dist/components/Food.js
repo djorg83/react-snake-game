@@ -25,7 +25,6 @@ exports.default = function (_ref) {
         id: 'food-' + color,
         style: {
             position: 'absolute',
-            border: '1px solid #ccc',
             borderRadius: scale,
             top: scale * y,
             left: scale * x,

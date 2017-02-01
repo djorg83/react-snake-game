@@ -42,7 +42,7 @@ const WRAPPER_STYLE = {
 
 const App = () => (
 	<div style={WRAPPER_STYLE}>
-        <Snake />
+        <Snake sound={true} />
 	</div>
 );
 

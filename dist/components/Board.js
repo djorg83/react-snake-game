@@ -81,6 +81,7 @@ var Board = function (_Component) {
         }, _this.restart = function () {
             _this.setState({
                 direction: 'right',
+                grid: _this.state.grid || _this.getGrid(),
                 segments: [{
                     x: 2,
                     y: 0
@@ -252,7 +253,10 @@ var Board = function (_Component) {
                 food: ateFood ? null : _this.state.food,
                 scoreLocation: ateFood ? null : _this.state.scoreLocation
             }, function () {
-                if (ateFood) {
+                if (_this.state.dead) {
+                    if (_this.props.sound === true) _utils2.default.playAudioClip('die');
+                } else if (ateFood) {
+                    if (_this.props.sound === true) _utils2.default.playAudioClip('eat-food');
                     _this.placeFood(previousFood);
                 }
             });
@@ -272,9 +276,9 @@ var Board = function (_Component) {
                             height: _this.state.scale,
                             width: _this.state.scale,
                             top: _this.state.scale * y,
-                            left: _this.state.scale * x,
-                            borderLeft: x > 0 ? '1px solid ' + borderColor : 'none',
-                            borderBottom: y < _this.state.columns - 1 ? '1px solid ' + borderColor : 'none'
+                            left: _this.state.scale * x
+                            //borderLeft : x > 0 ? `1px solid ${borderColor}` : 'none',
+                            //borderBottom : y < this.state.columns - 1 ? `1px solid ${borderColor}` : 'none'
                         }
                     }));
                 }
@@ -290,13 +294,15 @@ var Board = function (_Component) {
 
             var container = document.getElementById('snake-container').parentElement;
             var containerWidth = container.offsetWidth;
+            var containerHeight = container.offsetHeight;
             var boardWidth = containerWidth - 30;
+            var boardHeight = containerHeight - 30;
 
             var scale = Math.floor(boardWidth / this.state.columns);
 
             this.setState({
                 scale: scale,
-                rows: Math.floor(boardWidth / scale)
+                rows: Math.floor(boardHeight / scale)
             }, function () {
                 return _this2.restart();
             });
@@ -327,13 +333,13 @@ var Board = function (_Component) {
                     'div',
                     { style: {
                             height: 30,
-                            padding: '0px 100px'
+                            fontSize: Math.max(10, this.state.scale * .6)
                         } },
                     _react2.default.createElement(
                         'div',
                         { style: {
                                 float: 'left',
-                                margin: 5,
+                                marginLeft: 30,
                                 color: '#000'
                             } },
                         _react2.default.createElement(
@@ -348,7 +354,7 @@ var Board = function (_Component) {
                         'div',
                         { style: {
                                 float: 'right',
-                                margin: 5,
+                                marginRight: 30,
                                 color: '#000'
                             } },
                         _react2.default.createElement(
@@ -370,40 +376,37 @@ var Board = function (_Component) {
                             height: this.state.scale * this.state.rows,
                             position: 'relative',
                             margin: '0 auto',
-                            backgroundColor: this.state.dead ? '#333' : '#fff',
+                            backgroundColor: '#333',
                             border: '2px solid #ccc',
                             boxShadow: '1px 2px 8px 0px rgba(0, 0, 0, 0.2)',
                             overflow: 'hidden'
                         }
                     },
-                    this.getGrid(),
-                    this.state.dead ? _react2.default.createElement(_GameOver2.default, { restart: this.restart }) : _react2.default.createElement(
+                    this.state.grid,
+                    this.state.dead && _react2.default.createElement(_GameOver2.default, { restart: this.restart }),
+                    _react2.default.createElement(_Snake2.default, this.state),
+                    _react2.default.createElement(_Food2.default, _extends({}, this.state, this.state.food)),
+                    this.state.scoreLocation && _react2.default.createElement(
                         'div',
-                        null,
-                        _react2.default.createElement(_Snake2.default, this.state),
-                        _react2.default.createElement(_Food2.default, _extends({}, this.state, this.state.food)),
-                        this.state.scoreLocation && _react2.default.createElement(
+                        { className: 'score', style: {
+                                opacity: 0,
+                                position: 'absolute',
+                                top: this.state.scale * this.state.scoreLocation.y,
+                                left: this.state.scale * this.state.scoreLocation.x,
+                                width: 1000,
+                                height: 200,
+                                textAlign: 'center'
+                            } },
+                        _react2.default.createElement(
                             'div',
-                            { className: 'score', style: {
-                                    opacity: 0,
-                                    position: 'absolute',
-                                    top: this.state.scale * this.state.scoreLocation.y,
-                                    left: this.state.scale * this.state.scoreLocation.x,
-                                    width: 1000,
-                                    height: 200,
-                                    textAlign: 'center'
+                            { style: {
+                                    position: 'relative',
+                                    left: '-50%',
+                                    top: '-50%',
+                                    color: '#0f79d6'
                                 } },
-                            _react2.default.createElement(
-                                'div',
-                                { style: {
-                                        position: 'relative',
-                                        left: '-50%',
-                                        top: '-50%',
-                                        color: '#0f79d6'
-                                    } },
-                                '+',
-                                this.state.scoreLocation.points
-                            )
+                            '+',
+                            this.state.scoreLocation.points
                         )
                     )
                 )
@@ -414,4 +417,7 @@ var Board = function (_Component) {
     return Board;
 }(_react.Component);
 
+Board.defaultProps = {
+    sound: true
+};
 exports.default = Board;

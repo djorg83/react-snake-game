@@ -41,7 +41,7 @@ exports.default = function (_ref) {
                 left: scale * x,
                 height: scale,
                 width: scale,
-                backgroundColor: COLORS[Math.min(8, index)]
+                backgroundColor: COLORS[0] //COLORS[Math.min(8, index)]
             } })
     );
 };

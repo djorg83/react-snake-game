@@ -80,6 +80,36 @@ var isInverseDirection = function isInverseDirection(dir1, dir2) {
     }
 };
 
+var registerAudioClip = function registerAudioClip(path) {
+
+    var audio = new Audio(path);
+    audio.preload = 'none';
+
+    return {
+        preload: function preload(to) {
+            audio.setAttribute('preload', to);
+            return this;
+        },
+        play: function play() {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.play();
+            return this;
+        }
+    };
+};
+
+var sounds = {
+    'eat-food': registerAudioClip('https://djorg83.github.io/react-snake-app/eat-food.mp3').preload(),
+    die: registerAudioClip('https://djorg83.github.io/react-snake-app/die.mp3').preload()
+};
+
+var playAudioClip = function playAudioClip(name) {
+    if (sounds[name]) {
+        sounds[name].play();
+    }
+};
+
 module.exports = {
     attachEvent: attachEvent,
     detachEvent: detachEvent,
@@ -89,5 +119,6 @@ module.exports = {
     getRandomNumber: getRandomNumber,
     getRandomCoordinates: getRandomCoordinates,
     getDirectionFromKeyCode: getDirectionFromKeyCode,
-    isInverseDirection: isInverseDirection
+    isInverseDirection: isInverseDirection,
+    playAudioClip: playAudioClip
 };
