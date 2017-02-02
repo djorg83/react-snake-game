@@ -91,14 +91,14 @@ keyframes blink {
 		opacity: 1;
 	}
 	75% {
-		font-size: 75px;
-		height: 75px;
+		font-size: 40px;
+		height: 40px;
 		opacity: 1;
 	}
 	100% {
-		font-size: 100px;
-		height: 100px;
-		opacity: 0;
+		font-size: 50px;
+		height: 50px;
+		opacity: 1;
 	}
 }
 @-moz-keyframes score {
@@ -108,14 +108,14 @@ keyframes blink {
 		opacity: 1;
 	}
 	75% {
-		font-size: 75px;
-		height: 75px;
+		font-size: 40px;
+		height: 40px;
 		opacity: 1;
 	}
 	100% {
-		font-size: 100px;
-		height: 100px;
-		opacity: 0;
+		font-size: 50px;
+		height: 50px;
+		opacity: 1;
 	}}
 keyframes score {
 	0% {
@@ -124,13 +124,13 @@ keyframes score {
 		opacity: 1;
 	}
 	75% {
-		font-size: 75px;
-		height: 75px;
+		font-size: 40px;
+		height: 40px;
 		opacity: 1;
 	}
 	100% {
-		font-size: 100px;
-		height: 100px;
-		opacity: 0;
+		font-size: 50px;
+		height: 50px;
+		opacity: 1;
 	}
 }

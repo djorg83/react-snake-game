@@ -1,12 +1,12 @@
 {
   "name": "react-snake-game",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Snake game that can be embedded in any React app",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "gulp",
-    "dev": "webpack --watch | nodemon ./server.js"
+    "dev": "gulp watch"
   },
   "repository": {
     "type": "git",

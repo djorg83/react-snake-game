@@ -12,17 +12,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
+var ALIVE_COLOR = 'red';
+var DEAD_COLOR = 'gray';
+
 exports.default = function (_ref) {
     var scale = _ref.scale,
         x = _ref.x,
         y = _ref.y,
-        color = _ref.color,
-        props = _objectWithoutProperties(_ref, ['scale', 'x', 'y', 'color']);
+        dead = _ref.dead,
+        props = _objectWithoutProperties(_ref, ['scale', 'x', 'y', 'dead']);
 
     if (props.food == null) return false;
     return _react2.default.createElement('div', {
         className: 'food',
-        id: 'food-' + color,
         style: {
             position: 'absolute',
             borderRadius: scale,
@@ -32,7 +34,7 @@ exports.default = function (_ref) {
             width: scale / 2,
             marginTop: scale / 4,
             marginLeft: scale / 4,
-            backgroundColor: color
+            backgroundColor: dead ? DEAD_COLOR : ALIVE_COLOR
         }
     });
 };

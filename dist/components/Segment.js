@@ -16,7 +16,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var COLORS = ['#a9ff70', '#98e665', '#87cc5a', '#77b34f', '#558038', '#44672d', '#334d22', '#223416', '#111a0b'];
+var ALIVE_COLOR = '#a9ff70';
+var DEAD_COLOR = 'gray';
 
 exports.default = function (_ref) {
     var scale = _ref.scale,
@@ -24,7 +25,8 @@ exports.default = function (_ref) {
         y = _ref.y,
         color = _ref.color,
         index = _ref.index,
-        props = _objectWithoutProperties(_ref, ['scale', 'x', 'y', 'color', 'index']);
+        dead = _ref.dead,
+        props = _objectWithoutProperties(_ref, ['scale', 'x', 'y', 'color', 'index', 'dead']);
 
     return _react2.default.createElement(
         _reactAddonsCssTransitionGroup2.default,
@@ -41,7 +43,7 @@ exports.default = function (_ref) {
                 left: scale * x,
                 height: scale,
                 width: scale,
-                backgroundColor: COLORS[0] //COLORS[Math.min(8, index)]
+                backgroundColor: dead ? DEAD_COLOR : ALIVE_COLOR
             } })
     );
 };

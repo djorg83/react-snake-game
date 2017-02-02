@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -29,6 +31,8 @@ var _utils = require('../utils');
 var _utils2 = _interopRequireDefault(_utils);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -103,6 +107,30 @@ var Board = function (_Component) {
             }, function () {
                 return _this.placeFood();
             });
+        }, _this.playSound = function (action) {
+            if (_this.props.sound !== true) return;
+
+            var audioClipName = null;
+            switch (action) {
+                case 'eat':
+                    audioClipName = 'eat-food';
+                    break;
+                case 'die':
+                    audioClipName = 'die';
+                    break;
+                case 'move':
+                    audioClipName = 'tick';
+                    break;
+                case 'change-direction':
+                    audioClipName = 'woosh';
+                    break;
+                default:
+                    break;
+            }
+
+            if (audioClipName == null) return;
+
+            _utils2.default.playAudioClip(audioClipName);
         }, _this.getSpeed = function () {
             var frequency = _this.state.refreshRate - 6 * _this.state.segments.length;
             return Math.max(30, frequency);
@@ -124,9 +152,9 @@ var Board = function (_Component) {
 
             _this.setState({
                 timer: timer
+            }, function () {
+                return _this.move();
             });
-        }, _this.getFoodColor = function () {
-            return 'red';
         }, _this.getFoodCoordinates = function () {
             var point = null;
             while (point == null || _this.doesPointIntersect(point, _this.state.segments)) {
@@ -149,7 +177,6 @@ var Board = function (_Component) {
             }
 
             var food = _this.getFoodCoordinates();
-            food.color = _this.getFoodColor();
 
             _this.setState({
                 food: food,
@@ -166,11 +193,11 @@ var Board = function (_Component) {
                 clearTimeout(_this.state.changeDirectionTimeout);
             }
 
-            if (e.keyCode === 13 && _this.state.dead) return _this.restart();
+            if ((typeof e === 'undefined' ? 'undefined' : _typeof(e)) === 'object' && e.keyCode === 13 && _this.state.dead) return _this.restart();
 
             var head = _this.state.segments[0];
 
-            var nextDirection = _utils2.default.getDirectionFromKeyCode(_this.state.direction, e.keyCode);
+            var nextDirection = typeof e === 'string' ? e : _utils2.default.getDirectionFromKeyCode(_this.state.direction, e.keyCode);
 
             if (_this.state.lastDirection != null && _utils2.default.isSamePosition(head, _this.state.lastPosition)) {
 
@@ -185,6 +212,10 @@ var Board = function (_Component) {
                 }
             }
 
+            if (nextDirection === _this.state.direction) return;
+
+            _this.playSound('change-direction');
+
             _this.setState({
                 direction: nextDirection,
                 lastDirection: _this.state.direction,
@@ -192,6 +223,8 @@ var Board = function (_Component) {
                     x: head.x,
                     y: head.y
                 }
+            }, function () {
+                return _this.startTimer();
             });
         }, _this.move = function () {
             if (_this.state.dead) return;
@@ -254,10 +287,12 @@ var Board = function (_Component) {
                 scoreLocation: ateFood ? null : _this.state.scoreLocation
             }, function () {
                 if (_this.state.dead) {
-                    if (_this.props.sound === true) _utils2.default.playAudioClip('die');
+                    _this.playSound('die');
                 } else if (ateFood) {
-                    if (_this.props.sound === true) _utils2.default.playAudioClip('eat-food');
+                    _this.playSound('eat');
                     _this.placeFood(previousFood);
+                } else {
+                    _this.playSound('move');
                 }
             });
         }, _this.doesPointIntersect = function (point, segments) {
@@ -284,6 +319,24 @@ var Board = function (_Component) {
                 }
             }
             return tiles;
+        }, _this.enforceMinMax = function (value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }, _this.getScoreLocation = function () {
+            if (_this.state.scoreLocation == null) return null;
+
+            var top = _this.state.scale * _this.state.scoreLocation.y;
+            var left = _this.state.scale * _this.state.scoreLocation.x;
+
+            var minTop = 50;
+            var maxTop = _this.state.boardHeight - minTop;
+
+            var minLeft = 100;
+            var maxLeft = _this.state.boardWidth - minLeft;
+
+            top = _this.enforceMinMax(top, minTop, maxTop);
+            left = _this.enforceMinMax(left, minLeft, maxLeft);
+
+            return { top: top, left: left };
         }, _temp), _possibleConstructorReturn(_this, _ret);
     }
 
@@ -295,12 +348,14 @@ var Board = function (_Component) {
             var container = document.getElementById('snake-container').parentElement;
             var containerWidth = container.offsetWidth;
             var containerHeight = container.offsetHeight;
-            var boardWidth = containerWidth - 30;
-            var boardHeight = containerHeight - 30;
+            var boardWidth = containerWidth - 125;
+            var boardHeight = containerHeight - 125;
 
             var scale = Math.floor(boardWidth / this.state.columns);
 
             this.setState({
+                boardWidth: boardWidth,
+                boardHeight: boardHeight,
                 scale: scale,
                 rows: Math.floor(boardHeight / scale)
             }, function () {
@@ -313,33 +368,38 @@ var Board = function (_Component) {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {
             _utils2.default.detachEvent(window, 'keydown', this.changeDirection.bind(this));
-        } //utils.getRandomColor();
-
+        }
     }, {
         key: 'render',
         value: function render() {
+            var _this3 = this,
+                _React$createElement;
+
+            var scoreLocation = this.getScoreLocation();
+
             return _react2.default.createElement(
                 'div',
                 { style: {
                         width: '100%',
-                        height: '100%'
+                        height: '100%',
+                        position: 'relative'
                     } },
                 _react2.default.createElement(
                     'style',
                     { type: 'text/css', scoped: true },
-                    '.segment-appear {\n                    \topacity: 0.01;\n                    }\n                    \n                    .segment-appear.segment-appear-active {\n                    \topacity: 1;\n                    \ttransition: opacity .5s ease-in;\n                    }\n                    \n                    .food {\n                    \tanimation: food-appear .3s;\n                    }\n                    \n                    @-webkit-keyframes food-appear {\n                    \t0% {\n                    \t\ttop: 0;\n                    \t\tleft: 0;\n                    \t\twidth: 300px;\n                    \t\theight: 300px;\n                    \t\tborder-radius: 300px;\n                    \t}\n                    }\n                    @-moz-keyframes food-appear {\n                    \t0% {\n                    \t\ttop: 0;\n                    \t\tleft: 0;\n                    \t\twidth: 300px;\n                    \t\theight: 300px;\n                    \t\tborder-radius: 300px;\n                    \t}\n                    }\n                    keyframes food-appear {\n                    \t0% {\n                    \t\ttop: 0;\n                    \t\tleft: 0;\n                    \t\twidth: 300px;\n                    \t\theight: 300px;\n                    \t\tborder-radius: 300px;\n                    \t}\n                    }\n                    \n                    .blink {\n                    \tanimation: blink 2s infinite;\n                    \t-webkit-animation: blink 2s infinite;\n                    }\n                    \n                    @-webkit-keyframes blink {\n                    \t0% {\n                    \t\topacity: 0;\n                    \t}\n                    \t50% {\n                    \t\topacity: 1;\n                    \t}\n                    \t100% {\n                    \t\topacity: 0;\n                    \t}\n                    }\n                    @-moz-keyframes blink {\n                    \t0% {\n                    \t\topacity: 0;\n                    \t}\n                    \t50% {\n                    \t\topacity: 1;\n                    \t}\n                    \t100% {\n                    \t\topacity: 0;\n                    \t}\n                    }\n                    keyframes blink {\n                    \t0% {\n                    \t\topacity: 0;\n                    \t}\n                    \t50% {\n                    \t\topacity: 1;\n                    \t}\n                    \t100% {\n                    \t\topacity: 0;\n                    \t}\n                    }\n                    \n                    .score {\n                    \tanimation-name: score;\n                    \tanimation-duration: .7s;\n                    \tanimation-timing-function: ease-out; \n                    }\n                    \n                    @-webkit-keyframes score {\n                    \t0% {\n                    \t\tfont-size: 15px;\n                    \t\theight: 15px;\n                    \t\topacity: 1;\n                    \t}\n                    \t75% {\n                    \t\tfont-size: 75px;\n                    \t\theight: 75px;\n                    \t\topacity: 1;\n                    \t}\n                    \t100% {\n                    \t\tfont-size: 100px;\n                    \t\theight: 100px;\n                    \t\topacity: 0;\n                    \t}\n                    }\n                    @-moz-keyframes score {\n                    \t0% {\n                    \t\tfont-size: 15px;\n                    \t\theight: 15px;\n                    \t\topacity: 1;\n                    \t}\n                    \t75% {\n                    \t\tfont-size: 75px;\n                    \t\theight: 75px;\n                    \t\topacity: 1;\n                    \t}\n                    \t100% {\n                    \t\tfont-size: 100px;\n                    \t\theight: 100px;\n                    \t\topacity: 0;\n                    \t}}\n                    keyframes score {\n                    \t0% {\n                    \t\tfont-size: 15px;\n                    \t\theight: 15px;\n                    \t\topacity: 1;\n                    \t}\n                    \t75% {\n                    \t\tfont-size: 75px;\n                    \t\theight: 75px;\n                    \t\topacity: 1;\n                    \t}\n                    \t100% {\n                    \t\tfont-size: 100px;\n                    \t\theight: 100px;\n                    \t\topacity: 0;\n                    \t}\n                    }'
+                    '.segment-appear {\n                    \topacity: 0.01;\n                    }\n                    \n                    .segment-appear.segment-appear-active {\n                    \topacity: 1;\n                    \ttransition: opacity .5s ease-in;\n                    }\n                    \n                    .food {\n                    \tanimation: food-appear .3s;\n                    }\n                    \n                    @-webkit-keyframes food-appear {\n                    \t0% {\n                    \t\ttop: 0;\n                    \t\tleft: 0;\n                    \t\twidth: 300px;\n                    \t\theight: 300px;\n                    \t\tborder-radius: 300px;\n                    \t}\n                    }\n                    @-moz-keyframes food-appear {\n                    \t0% {\n                    \t\ttop: 0;\n                    \t\tleft: 0;\n                    \t\twidth: 300px;\n                    \t\theight: 300px;\n                    \t\tborder-radius: 300px;\n                    \t}\n                    }\n                    keyframes food-appear {\n                    \t0% {\n                    \t\ttop: 0;\n                    \t\tleft: 0;\n                    \t\twidth: 300px;\n                    \t\theight: 300px;\n                    \t\tborder-radius: 300px;\n                    \t}\n                    }\n                    \n                    .blink {\n                    \tanimation: blink 2s infinite;\n                    \t-webkit-animation: blink 2s infinite;\n                    }\n                    \n                    @-webkit-keyframes blink {\n                    \t0% {\n                    \t\topacity: 0;\n                    \t}\n                    \t50% {\n                    \t\topacity: 1;\n                    \t}\n                    \t100% {\n                    \t\topacity: 0;\n                    \t}\n                    }\n                    @-moz-keyframes blink {\n                    \t0% {\n                    \t\topacity: 0;\n                    \t}\n                    \t50% {\n                    \t\topacity: 1;\n                    \t}\n                    \t100% {\n                    \t\topacity: 0;\n                    \t}\n                    }\n                    keyframes blink {\n                    \t0% {\n                    \t\topacity: 0;\n                    \t}\n                    \t50% {\n                    \t\topacity: 1;\n                    \t}\n                    \t100% {\n                    \t\topacity: 0;\n                    \t}\n                    }\n                    \n                    .score {\n                    \tanimation-name: score;\n                    \tanimation-duration: .7s;\n                    \tanimation-timing-function: ease-out; \n                    }\n                    \n                    @-webkit-keyframes score {\n                    \t0% {\n                    \t\tfont-size: 15px;\n                    \t\theight: 15px;\n                    \t\topacity: 1;\n                    \t}\n                    \t75% {\n                    \t\tfont-size: 40px;\n                    \t\theight: 40px;\n                    \t\topacity: 1;\n                    \t}\n                    \t100% {\n                    \t\tfont-size: 50px;\n                    \t\theight: 50px;\n                    \t\topacity: 1;\n                    \t}\n                    }\n                    @-moz-keyframes score {\n                    \t0% {\n                    \t\tfont-size: 15px;\n                    \t\theight: 15px;\n                    \t\topacity: 1;\n                    \t}\n                    \t75% {\n                    \t\tfont-size: 40px;\n                    \t\theight: 40px;\n                    \t\topacity: 1;\n                    \t}\n                    \t100% {\n                    \t\tfont-size: 50px;\n                    \t\theight: 50px;\n                    \t\topacity: 1;\n                    \t}}\n                    keyframes score {\n                    \t0% {\n                    \t\tfont-size: 15px;\n                    \t\theight: 15px;\n                    \t\topacity: 1;\n                    \t}\n                    \t75% {\n                    \t\tfont-size: 40px;\n                    \t\theight: 40px;\n                    \t\topacity: 1;\n                    \t}\n                    \t100% {\n                    \t\tfont-size: 50px;\n                    \t\theight: 50px;\n                    \t\topacity: 1;\n                    \t}\n                    }'
                 ),
                 _react2.default.createElement(
                     'div',
                     { style: {
                             height: 30,
+                            marginLeft: 10,
                             fontSize: Math.max(10, this.state.scale * .6)
                         } },
                     _react2.default.createElement(
                         'div',
                         { style: {
                                 float: 'left',
-                                marginLeft: 30,
                                 color: '#000'
                             } },
                         _react2.default.createElement(
@@ -353,8 +413,8 @@ var Board = function (_Component) {
                     _react2.default.createElement(
                         'div',
                         { style: {
-                                float: 'right',
-                                marginRight: 30,
+                                float: 'left',
+                                marginLeft: 10,
                                 color: '#000'
                             } },
                         _react2.default.createElement(
@@ -375,24 +435,23 @@ var Board = function (_Component) {
                             width: this.state.scale * this.state.columns,
                             height: this.state.scale * this.state.rows,
                             position: 'relative',
-                            margin: '0 auto',
                             backgroundColor: '#333',
+                            marginLeft: 5,
                             border: '2px solid #ccc',
                             boxShadow: '1px 2px 8px 0px rgba(0, 0, 0, 0.2)',
                             overflow: 'hidden'
                         }
                     },
                     this.state.grid,
-                    this.state.dead && _react2.default.createElement(_GameOver2.default, { restart: this.restart }),
                     _react2.default.createElement(_Snake2.default, this.state),
                     _react2.default.createElement(_Food2.default, _extends({}, this.state, this.state.food)),
-                    this.state.scoreLocation && _react2.default.createElement(
+                    scoreLocation && _react2.default.createElement(
                         'div',
                         { className: 'score', style: {
                                 opacity: 0,
                                 position: 'absolute',
-                                top: this.state.scale * this.state.scoreLocation.y,
-                                left: this.state.scale * this.state.scoreLocation.x,
+                                top: scoreLocation.top,
+                                left: scoreLocation.left,
                                 width: 1000,
                                 height: 200,
                                 textAlign: 'center'
@@ -403,10 +462,95 @@ var Board = function (_Component) {
                                     position: 'relative',
                                     left: '-50%',
                                     top: '-50%',
-                                    color: '#0f79d6'
+                                    color: '#0f79d6',
+                                    textShadow: '0px 0px 10px #333'
                                 } },
                             '+',
                             this.state.scoreLocation.points
+                        )
+                    ),
+                    this.state.dead && _react2.default.createElement(_GameOver2.default, { restart: this.restart })
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { style: {
+                            position: 'absolute',
+                            top: 100,
+                            right: 5
+                        } },
+                    _react2.default.createElement(
+                        'div',
+                        null,
+                        _react2.default.createElement(
+                            'button',
+                            {
+                                onClick: function onClick() {
+                                    return _this3.changeDirection('up');
+                                },
+                                onTouchEnd: function onTouchEnd() {
+                                    return _this3.changeDirection('up');
+                                },
+                                style: {
+                                    width: 35,
+                                    height: 35,
+                                    marginLeft: 35,
+                                    backgroundColor: this.state.direction === 'up' ? '#999' : '#ccc'
+                                }
+                            },
+                            '\u2191'
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        null,
+                        _react2.default.createElement(
+                            'button',
+                            {
+                                onClick: function onClick() {
+                                    return _this3.changeDirection('left');
+                                },
+                                onTouchEnd: function onTouchEnd() {
+                                    return _this3.changeDirection('left');
+                                },
+                                style: {
+                                    width: 35,
+                                    height: 35,
+                                    backgroundColor: this.state.direction === 'left' ? '#999' : '#ccc'
+                                }
+                            },
+                            '\u2190'
+                        ),
+                        _react2.default.createElement(
+                            'button',
+                            (_React$createElement = {
+                                onClick: function onClick() {
+                                    return _this3.changeDirection('down');
+                                }
+                            }, _defineProperty(_React$createElement, 'onClick', function onClick() {
+                                return _this3.changeDirection('down');
+                            }), _defineProperty(_React$createElement, 'style', {
+                                width: 35,
+                                height: 35,
+                                backgroundColor: this.state.direction === 'down' ? '#999' : '#ccc'
+                            }), _React$createElement),
+                            '\u2193'
+                        ),
+                        _react2.default.createElement(
+                            'button',
+                            {
+                                onClick: function onClick() {
+                                    return _this3.changeDirection('right');
+                                },
+                                onTouchEnd: function onTouchEnd() {
+                                    return _this3.changeDirection('right');
+                                },
+                                style: {
+                                    width: 35,
+                                    height: 35,
+                                    backgroundColor: this.state.direction === 'right' ? '#999' : '#ccc'
+                                }
+                            },
+                            '\u2192'
                         )
                     )
                 )
