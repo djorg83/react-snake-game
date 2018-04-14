@@ -155,6 +155,11 @@ var Board = function (_Component) {
             }, function () {
                 return _this.move();
             });
+        }, _this.stopTimer = function () {
+            clearInterval(_this.state.timer);
+            _this.setState(function (prevState) {
+                return { timer: null };
+            });
         }, _this.getFoodCoordinates = function () {
             var point = null;
             while (point == null || _this.doesPointIntersect(point, _this.state.segments)) {
@@ -368,6 +373,7 @@ var Board = function (_Component) {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {
             _utils2.default.detachEvent(window, 'keydown', this.changeDirection.bind(this));
+            this.stopTimer();
         }
     }, {
         key: 'render',
